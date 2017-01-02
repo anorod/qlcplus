@@ -81,6 +81,7 @@ class EFX : public Function
     enum EFXAttr
     {
         Intensity = Function::Intensity,
+        CrossfaderId = Function::CrossfaderId,
         Height,
         Width,
         Rotation,

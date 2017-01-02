@@ -114,7 +114,7 @@ public:
     enum Attr
     {
         Intensity = 0,
-        CrosfaderId = 1
+        CrossfaderId = 1
     };
 
     /*********************************************************************

@@ -313,7 +313,7 @@ public:
     void adjustIntensity(qreal fraction, int stepIndex = -1);
 
     /** Adjust the Crossfader ID of chaser steps. */
-    void adjustCrosfaderId(qreal id, int stepIndex = -1);
+    void adjustCrossfaderId(qreal id, int stepIndex = -1);
 
 private:
     /** Step index at chaser start */

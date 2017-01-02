@@ -198,7 +198,7 @@ public:
     /**
      * Adjust the CrossfaderId of chaser steps.
      */
-    void adjustCrosfaderId(qreal id, int stepIndex);
+    void adjustCrossfaderId(qreal id, int stepIndex);
 
 
     /************************************************************************

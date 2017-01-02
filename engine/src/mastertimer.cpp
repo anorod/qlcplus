@@ -282,16 +282,19 @@ void MasterTimer::timerTickFunctions(QList<Universe *> universes)
         for (int i = 0; i < m_functionList.size(); i++)
         {
             Function* function = m_functionList.at(i);
-            if(function != NULL){
-                if (function->stopped() == false && m_stopAllFunctions == false && function->getAttributeValue(Function::CrosfaderId) != 0 && function->type() == 1)
+            if(function != NULL)
+            {
+                if (function->stopped() == false && m_stopAllFunctions == false && function->getAttributeValue(Function::CrossfaderId) != 0 && function->type() == 1)
                 {
                     Doc* doc = new Doc(qobject_cast<Doc*> (parent()));
                     Function* function_copy = function->createCopy(doc, false);
                     function_copy->adjustAttribute(function->getAttributeValue(Function::Intensity), Function::Intensity);
-                    for(int j = i+1; j < m_functionList.size(); j++){
+                    for(int j = i+1; j < m_functionList.size(); j++)
+                    {
                         Function* function_2 = m_functionList.at(j);
-                        if(function_2 != NULL){
-                            if(function->stopped() == false && function->getAttributeValue(Function::CrosfaderId) == function_2->getAttributeValue(Function::CrosfaderId) && function_2->type() == function->type())
+                        if(function_2 != NULL)
+                        {
+                            if(function->stopped() == false && function->getAttributeValue(Function::CrossfaderId) == function_2->getAttributeValue(Function::CrossfaderId) && function_2->type() == function->type())
                             {
                                 function_copy->addFrom(function_2);
                                 function_copy->setDuration(function_copy->infiniteSpeed());
