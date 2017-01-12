@@ -62,7 +62,6 @@ MasterTimer::MasterTimer(Doc* doc)
     , d_ptr(new MasterTimerPrivate(this))
     , m_stopAllFunctions(false)
     , m_dmxSourceListMutex(QMutex::Recursive)
-    , m_simpleDeskRegistered(false)
     , m_fader(new GenericFader(doc))
     , m_beatSourceType(None)
     , m_currentBPM(120)
@@ -278,6 +277,36 @@ void MasterTimer::timerTickFunctions(QList<Universe *> universes)
         stoppedAFunction = false;
         removeList.clear();
 
+        // We look for functions that are in Crossfader submasters
+        for (int i = 0; i < m_functionList.size(); i++)
+        {
+            Function* function = m_functionList.at(i);
+            if(function != NULL)
+            {
+                if (function->stopped() == false && m_stopAllFunctions == false && function->getAttributeValue(Function::CrossfaderId) != 0 && function->type() == 1)
+                {
+                    Doc* doc = new Doc(qobject_cast<Doc*> (parent()));
+                    Function* function_copy = function->createCopy(doc, false);
+                    function_copy->adjustAttribute(function->getAttributeValue(Function::Intensity), Function::Intensity);
+                    for(int j = i+1; j < m_functionList.size(); j++)
+                    {
+                        Function* function_2 = m_functionList.at(j);
+                        if(function_2 != NULL)
+                        {
+                            if(function->stopped() == false && function->getAttributeValue(Function::CrossfaderId) == function_2->getAttributeValue(Function::CrossfaderId) && function_2->type() == function->type())
+                            {
+                                function_copy->addFrom(function_2);
+                                function_copy->setDuration(function_copy->infiniteSpeed());
+                                if (firstIteration)
+                                    function_copy->write(this, universes);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
         for (int i = 0; i < m_functionList.size(); i++)
         {
             Function* function = m_functionList.at(i);
@@ -355,25 +384,27 @@ void MasterTimer::timerTickFunctions(QList<Universe *> universes)
  * DMX Sources
  ****************************************************************************/
 
-void MasterTimer::registerDMXSource(DMXSource* source, QString name)
+void MasterTimer::registerDMXSource(DMXSource* source)
 {
     Q_ASSERT(source != NULL);
 
     QMutexLocker lock(&m_dmxSourceListMutex);
     if (m_dmxSourceList.contains(source) == false)
     {
-        if (name == "SimpleDesk")
+        int insertPos = 0;
+
+        for (int i = m_dmxSourceList.count() - 1; i >= 0; i--)
         {
-            m_dmxSourceList.append(source);
-            m_simpleDeskRegistered = true;
+            DMXSource *src = m_dmxSourceList.at(i);
+            if (src->priority() <= source->priority())
+            {
+                insertPos = i + 1;
+                break;
+            }
         }
-        else
-        {
-            if (m_simpleDeskRegistered == true)
-                m_dmxSourceList.insert(m_dmxSourceList.count() - 1, source);
-            else
-                m_dmxSourceList.append(source);
-        }
+
+        m_dmxSourceList.insert(insertPos, source);
+        qDebug() << "DMX source with priority" <<  source->priority() << "registered at pos" << insertPos;
     }
 }
 
@@ -383,6 +414,31 @@ void MasterTimer::unregisterDMXSource(DMXSource* source)
 
     QMutexLocker lock(&m_dmxSourceListMutex);
     m_dmxSourceList.removeAll(source);
+}
+
+void MasterTimer::requestNewPriority(DMXSource *source)
+{
+    Q_ASSERT(source != NULL);
+    QMutexLocker lock(&m_dmxSourceListMutex);
+    if (m_dmxSourceList.contains(source) == true)
+    {
+       int pos = m_dmxSourceList.indexOf(source);
+       int newPos = 0;
+
+       for (int i = m_dmxSourceList.count() - 1; i >= 0; i--)
+       {
+           DMXSource *src = m_dmxSourceList.at(i);
+           if (src->priority() <= source->priority())
+           {
+               newPos = i;
+               break;
+           }
+       }
+
+       m_dmxSourceList.move(pos, newPos);
+       qDebug() << "DMX source moved from" << pos << "to" << m_dmxSourceList.indexOf(source) << ". Count:" << m_dmxSourceList.count();
+    }
+
 }
 
 void MasterTimer::timerTickDMXSources(QList<Universe *> universes)

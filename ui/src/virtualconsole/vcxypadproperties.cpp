@@ -193,7 +193,7 @@ VCXYPadProperties::VCXYPadProperties(VCXYPad* xypad, Doc* doc)
         restoreGeometry(var.toByteArray());
     AppUtil::ensureWidgetIsVisible(this);
 
-    m_doc->masterTimer()->registerDMXSource(this, "XYPadCfg");
+    m_doc->masterTimer()->registerDMXSource(this);
 }
 
 VCXYPadProperties::~VCXYPadProperties()
@@ -201,6 +201,8 @@ VCXYPadProperties::~VCXYPadProperties()
     QSettings settings;
     settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
     m_doc->masterTimer()->unregisterDMXSource(this);
+
+    delete m_presetInputWidget;
 }
 
 /****************************************************************************
@@ -894,9 +896,8 @@ void VCXYPadProperties::slotInputValueChanged(quint32 universe, quint32 channel)
 
     VCXYPadPreset *preset = getSelectedPreset();
 
-    if (preset != NULL) {
+    if (preset != NULL)
         preset->m_inputSource = m_presetInputWidget->inputSource();
-    }
 }
 
 void VCXYPadProperties::slotKeySequenceChanged(QKeySequence key)

@@ -127,6 +127,7 @@ Function::Function(Doc* doc, Type t)
 {
     Q_ASSERT(doc != NULL);
     registerAttribute(tr("Intensity"));
+    registerAttribute(tr("CrossfaderId"), 0);
 }
 
 Function::~Function()
@@ -179,6 +180,13 @@ bool Function::copyFrom(const Function* function)
     emit changed(m_id);
 
     return true;
+}
+
+/*****************************************************************************
+ * Adding
+ *****************************************************************************/
+void Function::addFrom(Function* function_from){
+    Q_UNUSED(function_from);
 }
 
 /*****************************************************************************
@@ -291,34 +299,9 @@ Function::Type Function::stringToType(const QString& string)
         return Undefined;
 }
 
-QIcon Function::typeToIcon(Function::Type type)
+QIcon Function::getIcon() const
 {
-    switch (type)
-    {
-    case Scene:
-        return QIcon(":/scene.png");
-    case Chaser:
-        return QIcon(":/chaser.png");
-    case EFX:
-        return QIcon(":/efx.png");
-    case Collection:
-        return QIcon(":/collection.png");
-    case Script:
-        return QIcon(":/script.png");
-    case RGBMatrix:
-        return QIcon(":/rgbmatrix.png");
-    case Show:
-        return QIcon(":/show.png");
-    case Audio:
-        return QIcon(":/audio.png");
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    case Video:
-        return QIcon(":/video.png");
-#endif
-    case Undefined:
-    default:
-        return QIcon(":/function.png");
-    }
+    return QIcon(":/function.png");
 }
 
 /*********************************************************************
@@ -1235,14 +1218,26 @@ void Function::adjustAttribute(qreal fraction, int attributeIndex)
         return;
 
     //qDebug() << Q_FUNC_INFO << "idx:" << attributeIndex << ", val:" << fraction;
-    m_attributes[attributeIndex].value = CLAMP(fraction, 0.0, 1.0);
+    if(attributeIndex == Function::CrossfaderId)
+    {
+        m_attributes[attributeIndex].value = fraction;
+    } else {
+        m_attributes[attributeIndex].value = CLAMP(fraction, 0.0, 1.0);
+    }
     emit attributeChanged(attributeIndex, m_attributes[attributeIndex].value);
 }
 
 void Function::resetAttributes()
 {
     for (int i = 0; i < m_attributes.count(); i++)
-        m_attributes[i].value = 1.0;
+    {
+        if(!QString::compare(m_attributes[i].name, "CrossfaderId", Qt::CaseInsensitive))
+        {
+            m_attributes[i].value = 0.0;
+        } else {
+            m_attributes[i].value = 1.0;
+        }
+    }
 }
 
 qreal Function::getAttributeValue(int attributeIndex) const

@@ -60,6 +60,9 @@ public:
     Chaser(Doc* doc);
     virtual ~Chaser();
 
+    /** @reimp */
+    QIcon getIcon() const;
+
 private:
     quint32 m_legacyHoldBus;
 
@@ -67,7 +70,7 @@ private:
      * Copying
      *********************************************************************/
 public:
-    /** @reimpl */
+    /** @reimp */
     Function* createCopy(Doc* doc, bool addToDoc = true);
 
     /** Copy the contents for this function from another function */
@@ -308,6 +311,9 @@ public:
 
     /** Adjust the intensities of chaser steps. */
     void adjustIntensity(qreal fraction, int stepIndex = -1);
+
+    /** Adjust the Crossfader ID of chaser steps. */
+    void adjustCrossfaderId(qreal id, int stepIndex = -1);
 
 private:
     /** Step index at chaser start */

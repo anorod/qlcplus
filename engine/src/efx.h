@@ -81,6 +81,7 @@ class EFX : public Function
     enum EFXAttr
     {
         Intensity = Function::Intensity,
+        CrossfaderId = Function::CrossfaderId,
         Height,
         Width,
         Rotation,
@@ -94,6 +95,9 @@ class EFX : public Function
 public:
     EFX(Doc* doc);
     ~EFX();
+
+    /** @reimp */
+    QIcon getIcon() const;
 
     /*********************************************************************
      * Copying

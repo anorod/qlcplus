@@ -68,7 +68,7 @@ ContextManager::ContextManager(QQuickView *view, Doc *doc,
     connect(m_fixtureManager, &FixtureManager::positionTypeValueChanged, this, &ContextManager::slotPositionChanged);
     connect(m_fixtureManager, &FixtureManager::presetChanged, this, &ContextManager::slotPresetChanged);
     connect(m_doc->inputOutputMap(), &InputOutputMap::universesWritten, this, &ContextManager::slotUniversesWritten);
-    connect(m_functionManager, &FunctionManager::functionEditingChanged, this, &ContextManager::slotFunctionEditingChanged);
+    connect(m_functionManager, &FunctionManager::isEditingChanged, this, &ContextManager::slotFunctionEditingChanged);
 }
 
 ContextManager::~ContextManager()
@@ -596,6 +596,7 @@ void ContextManager::resetDumpValues()
         m_source->set(sv.fxi, sv.channel, 0);
     }
     m_source->unsetAll();
+
     m_functionManager->resetDumpValues();
 }
 

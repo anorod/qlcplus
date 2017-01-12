@@ -79,6 +79,14 @@ Chaser::~Chaser()
 {
 }
 
+QIcon Chaser::getIcon() const
+{
+    if (isSequence())
+        return QIcon(":/sequence.png");
+
+    return QIcon(":/chaser.png");
+}
+
 /*****************************************************************************
  * Copying
  *****************************************************************************/
@@ -667,6 +675,13 @@ void Chaser::adjustIntensity(qreal fraction, int stepIndex)
     QMutexLocker runnerLocker(&m_runnerMutex);
     if (m_runner != NULL)
         m_runner->adjustIntensity(fraction * getAttributeValue(Intensity), stepIndex);
+}
+
+void Chaser::adjustCrossfaderId(qreal id, int stepIndex)
+{
+    QMutexLocker runnerLocker(&m_runnerMutex);
+    if (m_runner != NULL)
+        m_runner->adjustCrossfaderId(id, stepIndex);
 }
 
 bool Chaser::contains(quint32 functionId)

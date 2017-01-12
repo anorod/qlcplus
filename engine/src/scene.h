@@ -74,9 +74,12 @@ public:
      */
     ~Scene();
 
+    /** @reimp */
+    QIcon getIcon() const;
+
     void setChildrenFlag(bool flag);
 
-    /** @reimpl */
+    /** @reimp */
     quint32 totalDuration();
 
 private:
@@ -89,11 +92,18 @@ private:
      * Copying
      *********************************************************************/
 public:
-    /** @reimpl */
+    /** @reimp */
     Function* createCopy(Doc* doc, bool addToDoc = true);
 
-    /** @reimpl */
+    /** @reimp */
     bool copyFrom(const Function* function);
+
+    /*********************************************************************
+     * Adding
+     *********************************************************************/
+public:
+    /** @reimpl */
+    void addFrom(Function* function_from);
 
     /*********************************************************************
      * UI State

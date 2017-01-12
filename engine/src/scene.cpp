@@ -54,6 +54,11 @@ Scene::~Scene()
 {
 }
 
+QIcon Scene::getIcon() const
+{
+    return QIcon(":/scene.png");
+}
+
 void Scene::setChildrenFlag(bool flag)
 {
     m_hasChildren = flag;
@@ -101,6 +106,47 @@ bool Scene::copyFrom(const Function* function)
     m_channelGroupsLevels = scene->m_channelGroupsLevels;
 
     return Function::copyFrom(function);
+}
+
+/*****************************************************************************
+ * Adding
+ *****************************************************************************/
+
+void Scene::addFrom(Function* function_from)
+{
+    const Scene* sf_from = qobject_cast<const Scene*> (function_from);
+    qreal init_Intensity = getAttributeValue(Function::Intensity);
+    adjustAttribute(1, Function::Intensity);
+
+    QList <SceneValue> scenes_to = values();
+    QList <SceneValue> scenes_from = sf_from->values();
+
+    // First we adjust the intensity of not common channels
+    for(int i = 0; i<scenes_to.count(); i++)
+    {
+        int z = 0;
+        for(int j = 0; j<scenes_from.count();j++)
+        {
+            if(scenes_to[i] == scenes_from[j])
+                z++;
+        }
+        if(z == 0)
+        {
+            setValue(scenes_to[i].fxi, scenes_to[i].channel, CLAMP( qRound(init_Intensity*scenes_to[i].value), 0.0, 255.0 ));
+        }
+    }
+
+    // Now we adjust the intensity of common channels or channels from function_from
+    for(int i = 0; i<scenes_from.count(); i++)
+    {
+        if(checkValue(scenes_from[i]) )
+        {
+            setValue(scenes_from[i].fxi, scenes_from[i].channel, CLAMP(qRound(init_Intensity*value(scenes_from[i].fxi, scenes_from[i].channel) + sf_from->getAttributeValue(Function::Intensity) * scenes_from[i].value), 0.0, 255.0 ));
+        } else {
+            setValue(scenes_from[i].fxi, scenes_from[i].channel, CLAMP(qRound(sf_from->getAttributeValue(Function::Intensity)*scenes_from[i].value), 0.0, 255.0));
+        }
+    }
+
 }
 
 /*****************************************************************************
@@ -532,7 +578,7 @@ void Scene::flash(MasterTimer* timer)
 
     Q_ASSERT(timer != NULL);
     Function::flash(timer);
-    timer->registerDMXSource(this, "Scene");
+    timer->registerDMXSource(this);
 }
 
 void Scene::unFlash(MasterTimer* timer)
