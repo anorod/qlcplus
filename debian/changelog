@@ -1,5 +1,18 @@
 qlcplus (4.10.6) stable; urgency=low
 
+  * engine: fixed setting start/end color while a RGB Matrix is running
+  * engine: fixed crash when pausing a Show with an unavailable audio file
+  * UI/RGBPanel: added panel direction (thanks to Raivis Rengelis)
+  * UI/Simple Desk: fixed crash when changing values from a channel group in "fixtures view" mode
+  * Virtual Console/Slider: improved level monitoring with the possibility to act like a Simple Desk slider (see documentation)
+  * Virtual Console/Frame: fixed 4.10.5b regression disabling widgets when switching page in design mode
+  * New fixture: American DJ FREQ 5 Strobe (thanks to Martin Bochenek)
+  * New fixture: Martin Rush MH3 (thanks to Ed Middlebrooks)
+  * New fixture: Eurolite LED ACS BAR-12 (thanks to Michael Horber)
+  * New fixtures: Martin Rush MH6 Wash, Cameo Studio PAR 64 RGBWA UV 12W (thanks to Piotr Nowik)
+  * New fixture: ETEC Moving Spot 60E (thanks to Freasy)
+  * New fixture: American DJ Punch LED Pro (thanks to Benedict Stein)
+
  -- Massimo Callegari <massimocallegari@yahoo.it>  Sun, 5 Mar 2017 12:13:14 +0200
 
 qlcplus (4.10.5b) stable; urgency=high
