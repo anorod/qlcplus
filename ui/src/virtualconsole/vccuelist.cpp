@@ -88,14 +88,14 @@ const QString cfLabelNoStyle =
         "QLabel { border: 1px solid; border-radius: 3px; font: bold; }";
 
 VCCueList::VCCueList(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
-    , m_chaserID(Function::invalidId())
-    , m_nextPrevBehavior(DefaultRunFirst)
-    , m_playbackLayout(PlayPauseStop)
-    , m_timer(NULL)
-    , m_primaryIndex(0)
-    , m_secondaryIndex(0)
-    , m_primaryLeft(true)
-    , m_slidersMode(Crossfade)
+  , m_chaserID(Function::invalidId())
+  , m_nextPrevBehavior(DefaultRunFirst)
+  , m_playbackLayout(PlayPauseStop)
+  , m_timer(NULL)
+  , m_primaryIndex(0)
+  , m_secondaryIndex(0)
+  , m_primaryLeft(true)
+  , m_slidersMode(Crossfade)
 {
     /* Set the class name "VCCueList" as the object name as well */
     setObjectName(VCCueList::staticMetaObject.className());
@@ -160,12 +160,9 @@ VCCueList::VCCueList(QWidget* parent, Doc* doc) : VCWidget(parent, doc)
     m_tree->header()->setSectionsMovable(false);
 #endif
 
-    // Make only the notes column editable
+    // Make only the notes, fades and duration column editable
     m_tree->setItemDelegateForColumn(COL_NUM, new NoEditDelegate(this));
     m_tree->setItemDelegateForColumn(COL_NAME, new NoEditDelegate(this));
-    m_tree->setItemDelegateForColumn(COL_FADEIN, new NoEditDelegate(this));
-    m_tree->setItemDelegateForColumn(COL_FADEOUT, new NoEditDelegate(this));
-    m_tree->setItemDelegateForColumn(COL_DURATION, new NoEditDelegate(this));
 
     connect(m_tree, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
             this, SLOT(slotItemActivated(QTreeWidgetItem*)));
@@ -337,11 +334,11 @@ void VCCueList::setChaser(quint32 id)
     {
         /* Get rid of old function connections */
         disconnect(old, SIGNAL(running(quint32)),
-                this, SLOT(slotFunctionRunning(quint32)));
+                   this, SLOT(slotFunctionRunning(quint32)));
         disconnect(old, SIGNAL(stopped(quint32)),
-                this, SLOT(slotFunctionStopped(quint32)));
+                   this, SLOT(slotFunctionStopped(quint32)));
         disconnect(old, SIGNAL(currentStepChanged(int)),
-                this, SLOT(slotCurrentStepChanged(int)));
+                   this, SLOT(slotCurrentStepChanged(int)));
     }
 
     Chaser* chaser = qobject_cast<Chaser*> (m_doc->function(id));
@@ -416,41 +413,41 @@ void VCCueList::updateStepList()
 
         switch (ch->fadeInMode())
         {
-            case Chaser::Common:
-                item->setText(COL_FADEIN, Function::speedToString(ch->fadeInSpeed()));
-                break;
-            case Chaser::PerStep:
-                item->setText(COL_FADEIN, Function::speedToString(step.fadeIn));
-                break;
-            default:
-            case Chaser::Default:
-                item->setText(COL_FADEIN, QString());
+        case Chaser::Common:
+            item->setText(COL_FADEIN, Function::speedToString(ch->fadeInSpeed()));
+            break;
+        case Chaser::PerStep:
+            item->setText(COL_FADEIN, Function::speedToString(step.fadeIn));
+            break;
+        default:
+        case Chaser::Default:
+            item->setText(COL_FADEIN, QString());
         }
 
         switch (ch->fadeOutMode())
         {
-            case Chaser::Common:
-                item->setText(COL_FADEOUT, Function::speedToString(ch->fadeOutSpeed()));
-                break;
-            case Chaser::PerStep:
-                item->setText(COL_FADEOUT, Function::speedToString(step.fadeOut));
-                break;
-            default:
-            case Chaser::Default:
-                item->setText(COL_FADEOUT, QString());
+        case Chaser::Common:
+            item->setText(COL_FADEOUT, Function::speedToString(ch->fadeOutSpeed()));
+            break;
+        case Chaser::PerStep:
+            item->setText(COL_FADEOUT, Function::speedToString(step.fadeOut));
+            break;
+        default:
+        case Chaser::Default:
+            item->setText(COL_FADEOUT, QString());
         }
 
         switch (ch->durationMode())
         {
-            case Chaser::Common:
-                item->setText(COL_DURATION, Function::speedToString(ch->duration()));
-                break;
-            case Chaser::PerStep:
-                item->setText(COL_DURATION, Function::speedToString(step.duration));
-                break;
-            default:
-            case Chaser::Default:
-                item->setText(COL_DURATION, QString());
+        case Chaser::Common:
+            item->setText(COL_DURATION, Function::speedToString(ch->duration()));
+            break;
+        case Chaser::PerStep:
+            item->setText(COL_DURATION, Function::speedToString(step.duration));
+            break;
+        default:
+        case Chaser::Default:
+            item->setText(COL_DURATION, QString());
         }
     }
 
@@ -635,7 +632,7 @@ void VCCueList::slotPlayback()
         {
             stopChaser();
             m_stopButton->setStyleSheet(QString("QToolButton{ background: %1; }")
-                                            .arg(m_playbackButton->palette().background().color().name()));
+                                        .arg(m_playbackButton->palette().background().color().name()));
         }
     }
     else
@@ -671,7 +668,7 @@ void VCCueList::slotStop()
             if (ch->isPaused())
             {
                 m_stopButton->setStyleSheet(QString("QToolButton{ background: %1; }")
-                                                .arg(m_playbackButton->palette().background().color().name()));
+                                            .arg(m_playbackButton->palette().background().color().name()));
                 m_stopButton->setIcon(QIcon(":/player_pause.png"));
             }
             else
@@ -705,19 +702,19 @@ void VCCueList::slotNextCue()
     {
         switch (m_nextPrevBehavior)
         {
-            case DefaultRunFirst:
-                startChaser(getFirstIndex());
+        case DefaultRunFirst:
+            startChaser(getFirstIndex());
             break;
-            case RunNext:
-                startChaser(getNextIndex());
+        case RunNext:
+            startChaser(getNextIndex());
             break;
-            case Select:
-                m_tree->setCurrentItem(m_tree->topLevelItem(getNextIndex()));
+        case Select:
+            m_tree->setCurrentItem(m_tree->topLevelItem(getNextIndex()));
             break;
-            case Nothing:
+        case Nothing:
             break;
-            default:
-                Q_ASSERT(false);
+        default:
+            Q_ASSERT(false);
         }
     }
 }
@@ -739,19 +736,19 @@ void VCCueList::slotPreviousCue()
     {
         switch (m_nextPrevBehavior)
         {
-            case DefaultRunFirst:
-                startChaser(getLastIndex());
+        case DefaultRunFirst:
+            startChaser(getLastIndex());
             break;
-            case RunNext:
-                startChaser(getPrevIndex());
+        case RunNext:
+            startChaser(getPrevIndex());
             break;
-            case Select:
-                m_tree->setCurrentItem(m_tree->topLevelItem(getPrevIndex()));
+        case Select:
+            m_tree->setCurrentItem(m_tree->topLevelItem(getPrevIndex()));
             break;
-            case Nothing:
+        case Nothing:
             break;
-            default:
-                Q_ASSERT(false);
+        default:
+            Q_ASSERT(false);
         }
     }
 }
@@ -809,18 +806,31 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
 
 void VCCueList::slotItemChanged(QTreeWidgetItem *item, int column)
 {
-    if (m_listIsUpdating || column != COL_NOTES)
+    if (m_listIsUpdating || column == COL_NUM || column == COL_NAME)
         return;
 
     Chaser* ch = chaser();
     if (ch == NULL)
         return;
-
-    QString itemText = item->text(column);
     int idx = m_tree->indexOfTopLevelItem(item);
     ChaserStep step = ch->steps().at(idx);
 
-    step.note = itemText;
+    if(column == COL_NOTES){
+        QString itemText = item->text(column);
+        step.note = itemText;
+
+    } else if (column == COL_DURATION){
+        step.duration = Function::stringToSpeed(item->text(column));
+        step.hold = Function::speedSubtract(step.duration, step.fadeIn);
+
+    } else if (column == COL_FADEIN){
+        step.fadeIn = Function::stringToSpeed(item->text(column));
+
+    } else if (column == COL_FADEOUT){
+        step.fadeOut = Function::stringToSpeed(item->text(column));
+    } else {
+        return;
+    }
     ch->replaceStep(step, idx);
 }
 
@@ -936,9 +946,9 @@ void VCCueList::stopChaser()
 void VCCueList::setNextPrevBehavior(NextPrevBehavior nextPrev)
 {
     Q_ASSERT(nextPrev == DefaultRunFirst
-            || nextPrev == RunNext
-            || nextPrev == Select
-            || nextPrev == Nothing);
+             || nextPrev == RunNext
+             || nextPrev == Select
+             || nextPrev == Nothing);
     m_nextPrevBehavior = nextPrev;
 }
 
